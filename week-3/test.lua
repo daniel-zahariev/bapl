@@ -1,4 +1,5 @@
-local test = require 'u-test' -- https://github.com/IUdalov/u-test
+_G.package.path = _G.package.path .. ";../utils/?.lua"
+local test = require "u-test" -- https://github.com/IUdalov/u-test
 local lang = require "lang"
 
 -- unary plus is curretly treated as a noop
@@ -39,9 +40,13 @@ test.variable_with_special_syntax = function()
   test.equal(lang.execute("§име_$&@#!~?|_променлива = 123; return §име_$&@#!~?|_променлива"),  123)
 end
 
--- getting a weird error: "attempt to call a table value (field 'error_raised')"
--- test.variable_used_before_defined = function()
---   test.error_raised(function () lang.execute("return x") end, "unknown variable 'x'")
--- end
+test.variable_used_before_defined = function()
+  test.error_raised(function () lang.execute("return x") end, "unknown variable 'x'")
+end
 
+test.empty_statements = function()
+  test.equal(lang.execute(""), 0)
+  test.equal(lang.execute(";;"), 0)
+  test.equal(lang.execute(";;x=5;;;"), 0)
+end
 test.summary()

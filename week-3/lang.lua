@@ -35,6 +35,10 @@ local function nodeRet (exp)
   return {tag = "ret", exp = exp}
 end
 
+local function nodeEmpty ()
+  return {tag = "empty"}
+end
+
 local function nodeSeq (st1, st2)
   if st2 == nil then
     return st1
@@ -103,7 +107,7 @@ grammar = lpeg.P{"stats",
        + opPr * exp / nodePrint
        + ID * Assgn * exp / nodeAssgn
        + ret * exp / nodeRet
-       + SC^0,
+       + SC^-1 / nodeEmpty,
   base = numeral + OP * exp * CP + var,
   factor = unOp * factor / packUn + base,
   term = lpeg.Ct(factor * (opM * factor)^0) / foldBin,
@@ -183,16 +187,15 @@ local function codeStat (state, ast)
   elseif ast.tag == "print" then
     codeExp(state, ast.exp)
     addCode(state, "print")
+  elseif ast.tag == "empty" then
+    -- do nothing
   else error("invalid tree")
   end
 end
 
 local function compile (ast)
   local state = { code = {}, vars = {}, nvars = 0 }
-  if ast ~= '' then
-    codeStat(state, ast)
-  end
-
+  codeStat(state, ast)
   addCode(state, "push")
   addCode(state, 0)
   addCode(state, "ret")
