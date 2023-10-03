@@ -65,4 +65,42 @@ test.block_comment = function()
   test.almost_equal(lang.execute(codeWithLineComment), 0.075268817204301, 0.000000000000001)
 end
 
+test.if_than_else = function() 
+  local caseTrue = [[ a = 10; if a { b = 5 } else { b = 12 }; return b ]]
+  test.equal(lang.execute(caseTrue), 5)
+  local caseFalse = [[ a = 0; if a { b = 5 } else { b = 12 }; return b ]]
+  test.equal(lang.execute(caseFalse), 12)
+end
+
+test.if_elseif = function() 
+  local case2 = [[ a = 0; b = 2; if a { b = 5 } elseif b { b = 12 }; return b ]]
+  test.equal(lang.execute(case2), 12)
+  local case3 = [[ a = 0; b = 0; if a { b = 5 } elseif b { b = 12 } else { b = 123}; return b ]]
+  test.equal(lang.execute(case3), 123)
+end
+
+test.while_do = function() 
+  local twoPow10 = [[ a = 1; b = 10; while b { a = a * 2; b = b - 1; }; return a ]]
+  test.equal(lang.execute(twoPow10), 1024)
+end
+
+test.and_or = function() 
+  -- and
+  test.equal(lang.execute([[ return 1 and 2 ]]), 2)
+  test.equal(lang.execute([[ return -1 and 2 ]]), 2)
+  test.equal(lang.execute([[ return 0 and 2 ]]), 0)
+  test.equal(lang.execute([[ return 2 and 0 ]]), 0)
+  test.equal(lang.execute([[ return 1 and 0 and 3 ]]), 0)
+  test.equal(lang.execute([[ return 1 and 2 and 0 ]]), 0)
+  test.equal(lang.execute([[ return 1 and 2 and 3 ]]), 3)
+  -- or
+  test.equal(lang.execute([[ return 1 or 2 ]]), 1)
+  test.equal(lang.execute([[ return 2 or 1 ]]), 2)
+  test.equal(lang.execute([[ return 2 or 0 ]]), 2)
+  test.equal(lang.execute([[ return 0 or 2 ]]), 2)
+  test.equal(lang.execute([[ return 1 or 0 or 3 ]]), 1)
+  test.equal(lang.execute([[ return 3 or 0 or 1 ]]), 3)
+  test.equal(lang.execute([[ return 0 or 1 or 3 ]]), 1)
+end
+
 test.summary()

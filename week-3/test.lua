@@ -1,4 +1,4 @@
-_G.package.path = _G.package.path .. ";../utils/?.lua"
+package.path = "../utils/?.lua;" .. package.path
 local test = require "u-test" -- https://github.com/IUdalov/u-test
 local lang = require "lang"
 
