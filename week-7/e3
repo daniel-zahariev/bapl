@@ -1,0 +1,10 @@
+function odd();
+
+function main() {
+  n = 10;
+  return 10;
+}
+
+function odd() {
+  return n;
+}

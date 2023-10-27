@@ -1,0 +1,31 @@
+{
+st2 =   {
+  exp =     {
+    var = 'x';
+    tag = 'variable';
+    };
+  tag = 'ret';
+  };
+st1 =   {
+  exp =     {
+    e1 =       {
+      val = 12;
+      tag = 'number';
+      };
+    e2 =       {
+      exp =         {
+        val = 1;
+        tag = 'number';
+        };
+      op = '+';
+      tag = 'unop';
+      };
+    op = '+';
+    tag = 'binop';
+    };
+  tag = 'assgn';
+  id = 'x';
+  };
+tag = 'seq';
+}
+13

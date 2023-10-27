@@ -1,0 +1,7 @@
+a = 10 + 4; # comment 1
+b = a * a - 10;
+# comment 2
+#{
+block comment and expression on the same line it ends
+#} c = a/b;
+return c

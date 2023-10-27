@@ -1,0 +1,8 @@
+function foo() {
+  return 33;
+}
+
+function main() {
+  foo();
+  return 20 + foo();
+}
