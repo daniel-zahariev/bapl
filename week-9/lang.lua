@@ -98,6 +98,8 @@ local function Rw (t)
   return t * -alphanum * space
 end
 
+
+local opCmp = lpeg.C(T"==" + T"~=" + T"<=" + T"<" + T">=" + T">") * space
 local opE = lpeg.C(Rw"and" + Rw"or") * space
 local opA = lpeg.C(lpeg.S"+-") * space
 local opM = lpeg.C(lpeg.S"*/%") * space
@@ -111,7 +113,7 @@ local opPr = lpeg.S"@" * space
 local function foldBin (lst)
   local tree = lst[1]
   for i = 2, #lst, 2 do
-    tree = { tag = "binop", e1 = tree, op = lst[i], e2 = lst[i + 1] }
+    tree = { tag = "binop", e1 = tree, op = lst[i]:gsub("%s+", ""), e2 = lst[i + 1] }
   end
   return tree
 end
@@ -132,6 +134,7 @@ local factor = lpeg.V"factor"
 local term = lpeg.V"term"
 local expMD = lpeg.V"expMD"
 local expP = lpeg.V"expP"
+local expA = lpeg.V"expA"
 local exp = lpeg.V"exp"
 local elif = lpeg.V"elif"
 local stat = lpeg.V"stat"
@@ -200,7 +203,9 @@ grammar = lpeg.P{"prog",
   
   expP = lpeg.Ct(expMD * (opA * expMD)^0) / foldBin, -- +-
   
-  exp = lpeg.Ct(expP * (opE * expP)^0) / foldBin, -- and or
+  expA = lpeg.Ct(expP * (opE * expP)^0) / foldBin, -- and or
+
+  exp = lpeg.Ct(expA * (opCmp * expA)^0) / foldBin, -- comparisons
 
   comment = blockComment + lineComment,
 
@@ -265,7 +270,9 @@ end
 
 local binops = {["+"] = "add", ["-"] = "sub", 
                 ["%"] = "mod", ["*"] = "mul", ["/"] = "div",
-                ["^"] = "pow"}
+                ["^"] = "pow",
+                ["=="] = "eq", ["~="] = "neq", ["<="] = "lte", ["<"] = "lt", [">="] = "gte", [">"] = "gt",
+              }
 
 
 function Compiler:var2num (id, shouldExist)
@@ -658,6 +665,48 @@ local function run (code, mem, stack, top)
       top = top - 1
     elseif code[pc] == "div" then
       stack[top - 1] = stack[top - 1] / stack[top]
+      top = top - 1
+    elseif code[pc] == "eq" then
+      if stack[top - 1] == stack[top] then
+        stack[top - 1] = 1
+      else
+        stack[top - 1] = 0
+      end
+      top = top - 1
+    elseif code[pc] == "neq" then
+      if stack[top - 1] == stack[top] then
+        stack[top - 1] = 0
+      else
+        stack[top - 1] = 1
+      end
+      top = top - 1
+    elseif code[pc] == "lte" then
+      if stack[top - 1] <= stack[top] then
+        stack[top - 1] = 1
+      else
+        stack[top - 1] = 0
+      end
+      top = top - 1
+    elseif code[pc] == "lt" then
+      if stack[top - 1] < stack[top] then
+        stack[top - 1] = 1
+      else
+        stack[top - 1] = 0
+      end
+      top = top - 1
+    elseif code[pc] == "gte" then
+      if stack[top - 1] >= stack[top] then
+        stack[top - 1] = 1
+      else
+        stack[top - 1] = 0
+      end
+      top = top - 1
+    elseif code[pc] == "gt" then
+      if stack[top - 1] > stack[top] then
+        stack[top - 1] = 1
+      else
+        stack[top - 1] = 0
+      end
       top = top - 1
     elseif code[pc] == "load" then
       pc = pc + 1

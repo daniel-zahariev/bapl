@@ -164,6 +164,30 @@ test.and_or = function()
   test.equal(lang.execute([[ function main () { return 0 or 1 or 3 } ]]), 1)
 end
 
+
+test.comparison_operators = function()
+  test.equal(lang.execute([[ function main () { return 1 < 2 } ]]), 1)
+  test.equal(lang.execute([[ function main () { return 3 < 2 } ]]), 0)
+
+  test.equal(lang.execute([[ function main () { if 1 < 2 { return 5 } return 2 } ]]), 5)
+  test.equal(lang.execute([[ function main () { if 2 < 2 { return 5 } return 2 } ]]), 2)
+
+  test.equal(lang.execute([[ function main () { if 1 <= 2 { return 5 } return 2 } ]]), 5)
+  test.equal(lang.execute([[ function main () { if 3 <= 2 { return 5 } return 2 } ]]), 2)
+
+  test.equal(lang.execute([[ function main () { if 1 ~= 2 { return 5 } return 2 } ]]), 5)
+  test.equal(lang.execute([[ function main () { if 2 ~= 2 { return 5 } return 2 } ]]), 2)
+
+  test.equal(lang.execute([[ function main () { if 2 == 2 { return 5 } return 2 } ]]), 5)
+  test.equal(lang.execute([[ function main () { if 1 == 2 { return 5 } return 2 } ]]), 2)
+
+  test.equal(lang.execute([[ function main () { if 2 >= 2 { return 5 } return 2 } ]]), 5)
+  test.equal(lang.execute([[ function main () { if 1 >= 2 { return 5 } return 2 } ]]), 2)
+
+  test.equal(lang.execute([[ function main () { if 3 > 2 { return 5 } return 2 } ]]), 5)
+  test.equal(lang.execute([[ function main () { if 1 > 2 { return 5 } return 2 } ]]), 2)
+end
+
 ------------------------------------------------
 -- Arrays
 ------------------------------------------------
@@ -400,11 +424,13 @@ test.default_arguments = function()
     function main() {
       var config1 = getConfigValue() // resolves to 211
       base = 200
-      var config2 = getConfigValue(0) // resolves to 201
-      return config1 + config2
+      var config2 = getConfigValue() // resolves to 411
+      base = 0
+      var config3 = getConfigValue(0) // resolves to 1
+      return config1 + config2 + config3
     }
   ]]
-  test.equal(lang.execute(moreElaborateDefaults, false), 412)
+  test.equal(lang.execute(moreElaborateDefaults, false), 623)
 end
 
 test.summary()
