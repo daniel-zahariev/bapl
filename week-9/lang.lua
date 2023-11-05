@@ -134,6 +134,7 @@ local factor = lpeg.V"factor"
 local term = lpeg.V"term"
 local expMD = lpeg.V"expMD"
 local expP = lpeg.V"expP"
+local expO = lpeg.V"expO"
 local expA = lpeg.V"expA"
 local exp = lpeg.V"exp"
 local elif = lpeg.V"elif"
@@ -203,7 +204,9 @@ grammar = lpeg.P{"prog",
   
   expP = lpeg.Ct(expMD * (opA * expMD)^0) / foldBin, -- +-
   
-  expA = lpeg.Ct(expP * (opE * expP)^0) / foldBin, -- and or
+  expO = lpeg.Ct(expP * (opE * expP)^0) / foldBin, -- or
+
+  expA = lpeg.Ct(expO * (opE * expO)^0) / foldBin, -- and
 
   exp = lpeg.Ct(expA * (opCmp * expA)^0) / foldBin, -- comparisons
 

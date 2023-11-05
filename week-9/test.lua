@@ -162,6 +162,10 @@ test.and_or = function()
   test.equal(lang.execute([[ function main () { return 1 or 0 or 3 } ]]), 1)
   test.equal(lang.execute([[ function main () { return 3 or 0 or 1 } ]]), 3)
   test.equal(lang.execute([[ function main () { return 0 or 1 or 3 } ]]), 1)
+  
+  -- or has higher priority than and
+  -- this equals to `1 and (0 or 5)` not `(1 and 0) or 5`
+  test.equal(lang.execute([[ function main () { return 1 and 0 or 5 } ]]), 5)
 end
 
 
